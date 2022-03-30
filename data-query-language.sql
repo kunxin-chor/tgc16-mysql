@@ -204,3 +204,30 @@ having productCode = ( select productCode from orderdetails
  )
  order by year(orderDate), month(orderDate);
 
+-- show all products, and for each product,
+-- display the total quantity ordered and
+-- and the customer whom ordered the most of that product
+SELECT * from
+(
+  select productCode, sum(quantityOrdered) from orderdetails
+	group by productCode
+) as t1
+JOIN
+(
+  select productCode as outerProductCode, customerNumber
+from orders join orderdetails
+ on orders.orderNumber = orderdetails.orderNumber
+group by productCode, customerNumber
+having (productCode, customerNumber) = (
+  
+SELECT productCode, customerNumber FROM orders JOIN orderdetails
+ on orders.orderNumber = orderdetails.orderNumber
+ where productCode=outerProductCode
+ group by customerNumber, productCode
+ order by sum(quantityOrdered) DESC
+ limit 1
+ ) 
+)
+ as t2
+ on t1.productCode = t2.outerProductCode
+ 
