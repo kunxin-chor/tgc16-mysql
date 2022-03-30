@@ -54,8 +54,7 @@ create table invoice (
     status varchar(20),
     order_order_no int unsigned,
     CONSTRAINT fk_invoice_orders FOREIGN KEY (order_order_no) REFERENCES orders(order_no)
-) engine = innodb
-;
+) engine = innodb;
 
 create table invoice_item(
     invoice_item_id int unsigned auto_increment primary key ,
