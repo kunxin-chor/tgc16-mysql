@@ -117,3 +117,57 @@ group by productCode, productName
 having count(*) >= 28
 order by count(*) desc
 limit 10;
+
+-- Q8
+select customerName, amount from customers join payments
+on customers.customerNumber = payments.customerNumber
+where country="USA"
+
+-- or to display the sum per customer from USA
+select sum(amount), customerName from 
+  payments join customers
+  on payments.customerNumber = customers.customerNumber
+  where country="USA"
+  group by customers.customerNumber, customerName
+
+-- Q8
+select count(*), state from offices join employees
+on offices.officeCode = employees.officeCode
+where offices.country = "USA"
+group by state
+
+-- Q9
+select avg(amount), customerName from 
+  payments join customers
+  on payments.customerNumber = customers.customerNumber
+  group by customers.customerNumber, customerName
+
+-- Q10
+select customerName, avg(amount), sum(amount) from customers
+ join payments on customers.customerNumber = payments.customerNumber
+group by customers.customerNumber
+having sum(amount) >= 10000
+order by avg(amount)
+
+-- Q11
+select sum(quantityOrdered), orderdetails.productCode, productName from orderdetails join products
+ on orderdetails.productCode = products.productCode
+ group by orderdetails.productCode, productName
+ order by sum(quantityOrdered) DESC
+ limit 10
+
+-- Q12
+select * from orders where orderDate BETWEEN "2003-01-01" AND "2003-12-31"
+select * from orders where year(orderDate) =  "2003"
+
+-- Q13
+select MONTH(orderDate), COUNT(*) from orders join orderdetails
+ ON orders.orderNumber = orderdetails.orderNumber
+ WHERE YEAR(orderDate) = 2003
+ GROUP BY MONTH(orderDate)
+
+-- Q13B
+select YEAR(orderDate), MONTH(orderDate), COUNT(*) from orders join orderdetails
+ ON orders.orderNumber = orderdetails.orderNumber
+ WHERE YEAR(orderDate) >= 2003 AND YEAR(orderDate) <=2004
+ GROUP BY YEAR(orderDate), MONTH(orderDate)
