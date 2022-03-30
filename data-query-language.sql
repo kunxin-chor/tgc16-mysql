@@ -80,3 +80,40 @@ select count(*) from customers join employees
 -- show all customers with their sales rep, even for customers with no sales rep
 select * from customers left join employees 
 	ON customers.salesRepEmployeeNumber = employees.employeeNumber;
+
+-- AGGREGATES
+-- find the average creditlimit among all customers
+SELECT AVG(creditLimit) FROM customers;
+
+-- count how many rows there are in the customers table
+-- i.e how many customers there are
+SELECT count(*) FROM customers;
+
+-- select by date
+SELECT * FROM payments where paymentDate > "2004-04-01"
+SELECT * FROM payments where paymentDate >= "2004-04-01" and paymentDate <= "2005-04-01"
+
+-- extract out the day, month and year component of a date
+SELECT YEAR(paymentDate), MONTH(paymentDate), DAY(paymentDate), amount from payments;
+
+-- find the total amount paid out in the month of June across all yeears
+SELECT sum(amount) from payments where month(paymentDate) = 6;
+
+-- show how many customers there per country
+SELECT country, count(*) FROM customers GROUP BY country
+
+-- show the average credit limit per country
+SELECT country, avg(creditLimit) FROM customers GROUP BY country
+
+-- show the average credit limit and number of customers per country:
+SELECT country, avg(creditLimit), count(*) FROM customers GROUP BY country
+
+-- show how  many times each product from the classic cars line
+-- has been ordered
+SELECT COUNT(*), products.productCode, productName FROM orderdetails
+join products on products.productCode = orderdetails.productCode
+where productLine = "Classic Cars"
+group by productCode, productName
+having count(*) >= 28
+order by count(*) desc
+limit 10;
