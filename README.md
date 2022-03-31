@@ -1,30 +1,6 @@
-
-# Logging in via the terminal
-
-For Gitpod, PC
+# Import in the sakila database
+In your `bash`, type in:
 ```
-mysql -u root
+mysql -u root < sakila-schema.sql
+mysql -u root < sakila-data.sql
 ```
-
-For MacOS
-```
-mysql -u root -p
-```
-
-# SQL Commands
-1. DDL - Data Definition Language
-2. Data Query language
-
-# DDL
-
-## Create a database
-```
-create database swimming_school;
-```
-
-## Switch database
-```
-use swimming_school
-```
-
-## Create tables
