@@ -17,6 +17,7 @@
             <th>Length</th>
             <th>Year</th>
             <th>Language</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +28,7 @@
             <td>{{this.length}}</td>
             <td>{{this.release_year}}</td>
             <td>{{this.language_name}}</td>
+            <td><a href="/films/{{this.film_id}}/edit" class="btn btn-success">Edit</a></td>
             
         </tr>
         {{/each}}

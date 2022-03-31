@@ -140,6 +140,32 @@ async function main() {
         ]);
         res.redirect('/films')
     })
+
+    app.get('/films/:film_id/edit', async function(req,res){
+        let [languages] = await connection.execute("SELECT * from language");
+        let [film] = await connection.execute(
+            "select * from film where film_id =?", [req.params.film_id]
+        )
+        res.render('edit_film',{
+            'film': film[0],
+            'languages': languages
+        })
+    })
+
+    app.post('/films/:film_id/edit', async function(req,res){
+        let query = `UPDATE film SET title=?,description=?,release_year=?,language_id=?
+                      WHERE film_id = ?`;
+        let bindings = [
+            req.body.title,
+            req.body.description,
+            req.body.release_year,
+            req.body.language_id,
+            req.params.film_id
+        ]
+
+        await connection.execute(query, bindings);
+        res.redirect('/films')
+    })
 }
 
 main();
