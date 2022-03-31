@@ -115,13 +115,30 @@ async function main() {
             bindings.push(req.query.year)
         }
 
-        console.log(query);
-
         let [films] = await connection.execute(query, bindings);
         res.render('films',{
             'films': films
         })
 
+    })
+
+    app.get('/films/create', async function(req,res){
+        let [languages] = await connection.execute("SELECT * from language");
+
+        res.render('create_film',{
+            'languages': languages
+        })
+    })
+
+    app.post('/films/create', async function(req,res){
+        let query = `INSERT INTO film (title, description,release_year,language_id) VALUES (?,?,?,?)`;
+        await connection.execute(query,[
+            req.body.title,
+            req.body.description,
+            req.body.release_year,
+            req.body.language_id
+        ]);
+        res.redirect('/films')
     })
 }
 
