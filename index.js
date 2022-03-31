@@ -28,6 +28,12 @@ async function main() {
         'database': process.env.DB_DATABASE,
         'password': process.env.DB_PASSWORD
     })
+
+    let query = "select * from actor";
+    // results will be an array, the first element
+    // (i.e index 0) will contain all the rows from the query
+    let results = await connection.execute(query);
+    console.log(results[0]);
 }
 
 main();
