@@ -101,7 +101,8 @@ async function main() {
     app.get('/films', async function(req,res){
         // always true query (aka a query that returns all rows)
         let query = `SELECT film.*, language.name as "language_name" from film join language 
-                        ON film.language_id = language.language_id WHERE 1`;
+                        ON film.language_id = language.language_id             
+                        WHERE 1`;
 
         let bindings = [];
 
@@ -122,33 +123,62 @@ async function main() {
 
     })
 
+    app.get('/films/:actor_id/actors', async function(req,res){
+        let query = `SELECT actor.* from film            
+                     JOIN film_actor ON film_actor.film_id = film.film_id
+                     JOIN actor ON film_actor.actor_id = actor.actor_id
+                     WHERE film.film_id = ?
+                     `
+        let [actors] = await connection.execute(query,[req.params.actor_id]);
+        res.render('film_actors',{
+            'actors': actors
+        })
+    })
+
     app.get('/films/create', async function(req,res){
         let [languages] = await connection.execute("SELECT * from language");
-
+        let [actors] = await connection.execute("SELECT * from actor");
         res.render('create_film',{
-            'languages': languages
+           languages, actors
         })
     })
 
     app.post('/films/create', async function(req,res){
         let query = `INSERT INTO film (title, description,release_year,language_id) VALUES (?,?,?,?)`;
-        await connection.execute(query,[
+        console.log(req.body);
+        let [results] = await connection.execute(query,[
             req.body.title,
             req.body.description,
             req.body.release_year,
             req.body.language_id
         ]);
+        let newFilmID = results.insertId; // insertId will store the id of the newly inserted row
+      
+        for (let actor_id of req.body.actors) {
+            await connection.execute(
+                "INSERT INTO film_actor (actor_id, film_id) values (?,?)",
+                [actor_id, newFilmID]
+            ) 
+        }
         res.redirect('/films')
     })
 
     app.get('/films/:film_id/edit', async function(req,res){
         let [languages] = await connection.execute("SELECT * from language");
+        let [actor_ids] = await connection.execute("SELECT actor_id from film_actor where film_id =?", [req.params.film_id])
+        let [actors] = await connection.execute("SELECT * from actor");
         let [film] = await connection.execute(
             "select * from film where film_id =?", [req.params.film_id]
         )
+
+        actor_ids = actor_ids.map( a => a.actor_id);
+
+
         res.render('edit_film',{
             'film': film[0],
-            'languages': languages
+            'languages': languages,
+            'actor_ids': actor_ids,
+            'actors': actors
         })
     })
 
@@ -164,6 +194,19 @@ async function main() {
         ]
 
         await connection.execute(query, bindings);
+
+        // update the actors in the films
+
+        // 1. delete all the actors from the films
+        await connection.execute("DELETE FROM film_actor WHERE film_id = ?", [req.params.film_id]);
+
+        // 2. re-add all the actors selected in the form
+        for (let actor_id of req.body.actors) {
+            await connection.execute(
+                "INSERT INTO film_actor (actor_id, film_id) values (?,?)",
+                [actor_id, req.params.film_id]
+            ) 
+        }
         res.redirect('/films')
     })
 }

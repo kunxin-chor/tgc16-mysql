@@ -28,7 +28,9 @@
             <td>{{this.length}}</td>
             <td>{{this.release_year}}</td>
             <td>{{this.language_name}}</td>
-            <td><a href="/films/{{this.film_id}}/edit" class="btn btn-success">Edit</a></td>
+            <td>
+                <a href="/films/{{this.film_id}}/actors" class="btn btn-primary">See Actors</a>
+                <a href="/films/{{this.film_id}}/edit" class="btn btn-success">Edit</a></td>
             
         </tr>
         {{/each}}
