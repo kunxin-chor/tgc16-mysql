@@ -29,11 +29,33 @@ async function main() {
         'password': process.env.DB_PASSWORD
     })
 
-    let query = "select * from actor";
-    // results will be an array, the first element
-    // (i.e index 0) will contain all the rows from the query
-    let results = await connection.execute(query);
-    console.log(results[0]);
+    // let query = "select * from actor";
+    // // results will be an array, the first element
+    // // (i.e index 0) will contain all the rows from the query
+    // let results = await connection.execute(query);
+    // console.log(results[0]);
+
+    app.get('/actors', async function(req,res){
+        let [actors] = await connection.execute("select * from actor");
+        // let results = await connection.execute("select * from actor");
+        // let actors = results[0];
+        res.render('actor',{
+            'actors': actors
+        })
+    })
+
+    app.get('/actors/create', function(req,res){
+        res.render('create_actor')
+    })
+
+    app.post('/actors/create', async function(req,res){
+        let firstName = req.body.first_name;
+        let lastName = req.body.last_name;
+        let query = `INSERT INTO actor
+        (first_name, last_name) values ("${firstName}", "${lastName}")`
+        await connection.execute(query);
+        res.send("Created");
+    })
 }
 
 main();
