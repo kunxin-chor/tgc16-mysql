@@ -51,10 +51,77 @@ async function main() {
     app.post('/actors/create', async function(req,res){
         let firstName = req.body.first_name;
         let lastName = req.body.last_name;
-        let query = `INSERT INTO actor
-        (first_name, last_name) values ("${firstName}", "${lastName}")`
-        await connection.execute(query);
+        // using prepared statements to avoid sql injection
+        let query = `INSERT INTO actor (first_name, last_name) values (?, ?)`
+        await connection.execute(query, [firstName, lastName]);
         res.send("Created");
+    })
+
+    app.get('/actors/:actor_id/update', async function(req,res){
+        let actorId = req.params.actor_id;
+
+        // select will always return an array of rows
+        // since we're selecting by actor_id, the PK, there should only be at  most one row
+        let [actors] = await connection.execute('select * from actor where actor_id = ?', [actorId]);
+        let actor = actors[0];
+        res.render('edit_actor',{
+            'actor': actor
+        })
+    })
+
+    app.post('/actors/:actor_id/update', async function(req,res){
+        let firstName = req.body.first_name;
+        let lastName = req.body.last_name;
+
+        let actorId = req.params.actor_id;
+        let query =  `UPDATE actor SET first_name=?, last_name=? WHERE actor_id = ?`;
+        await connection.execute(query, [firstName, lastName, actorId]);
+        res.redirect('/actors');
+    })
+
+    app.get('/actors/:actor_id/delete', async function(req,res){
+        let [actors] = await connection.execute(`SELECT * from actor where actor_id = ?`, [req.params.actor_id]);
+        let actor = actors[0];
+        res.render('delete_actor',{
+            'actor': actor
+        })
+    })
+
+    app.post('/actors/:actor_id/delete', async function(req,res){
+
+        let [film_actors] = await connection.execute("select * from film_actor where actor_id = ?", [req.params.actor_id]);
+        if (film_actors.length > 0) {
+            res.send("Sorry, we cannot delete the actor because they're in some films");
+        }
+
+        await connection.execute(`delete from actor where actor_id = ?`, [req.params.actor_id]);
+        res.redirect('/actors');
+    })
+
+    app.get('/films', async function(req,res){
+        // always true query (aka a query that returns all rows)
+        let query = `SELECT film.*, language.name as "language_name" from film join language 
+                        ON film.language_id = language.language_id WHERE 1`;
+
+        let bindings = [];
+
+        if (req.query.title) {
+            query += " AND title LIKE ?";
+            bindings.push('%' + req.query.title + '%');
+        }
+
+        if (req.query.year) {
+            query += " AND  release_year = ?";
+            bindings.push(req.query.year)
+        }
+
+        console.log(query);
+
+        let [films] = await connection.execute(query, bindings);
+        res.render('films',{
+            'films': films
+        })
+
     })
 }
 

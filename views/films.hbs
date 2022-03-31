@@ -1,0 +1,35 @@
+{{#extends 'base'}}
+
+{{#block "content"}}
+<form method="GET">
+    <input type="text" name="title" placeholder="Enter search terms"/>
+    <input type="text" name="year" placeholder="Enter year here"/>
+    <input type="submit"/>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Length</th>
+            <th>Year</th>
+            <th>Language</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each films}}
+        <tr>
+            <td>{{this.title}}</td>
+            <td>{{this.description}}</td>
+            <td>{{this.length}}</td>
+            <td>{{this.release_year}}</td>
+            <td>{{this.language_name}}</td>
+            
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{/block}}
+
+{{/extends}}
