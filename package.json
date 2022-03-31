@@ -1,0 +1,27 @@
+{
+  "name": "tgc16-mysql",
+  "version": "1.0.0",
+  "description": "In your `bash`, type in: ``` mysql -u root < sakila-schema.sql mysql -u root < sakila-data.sql ```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kunxin-chor/tgc16-mysql.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kunxin-chor/tgc16-mysql/issues"
+  },
+  "homepage": "https://github.com/kunxin-chor/tgc16-mysql#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "handlebars-helpers": "^0.10.0",
+    "hbs": "^4.2.0",
+    "mysql2": "^2.3.3",
+    "wax-on": "^1.2.2"
+  }
+}
